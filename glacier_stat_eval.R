@@ -9,7 +9,7 @@
 # ---- packages and data paths ------------
 
 #setwd("/data/scratch/thimanna/rwd")
-setwd("/data/projects/topoclif/")
+setwd("/data/projects/topoclif/result-data/run001_2018-06-18")
 # load packages
 lapply(
   c("raster", "tidyr", "rgdal", "dplyr", "rasterVis", "ggplot2"),
@@ -150,7 +150,7 @@ results <- list(
   TC_himalayaWest = singleEvaluate("RGI60-15.07374"),
   TC_karakoramCentral = singleEvaluate("RGI60-15.03448"),
   TC_hindukush = singleEvaluate("RGI60-14.24900"),
-  TC_karakoramCentral = singleEvaluate("RGI60-15.03448"),
+  #TC_karakoramCentral = singleEvaluate("RGI60-15.03448"), # is a duplicate
   TC_pamirEast = singleEvaluate("RGI60-13.41822"),
   TC_pamirCentral = singleEvaluate("RGI60-13.13595"),
   Abramov = singleEvaluate("RGI60-13.18096"),
