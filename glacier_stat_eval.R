@@ -8,16 +8,23 @@
 
 # ---- packages and data paths ------------
 
-setwd("/data/scratch/thimanna/rwd")
-
+#setwd("/data/scratch/thimanna/rwd")
+setwd("/data/projects/topoclif/")
 # load packages
-lapply(c("raster", "tidyr", "rgdal", "dplyr", "rasterVis", "ggplot2"), require, character.only = TRUE)
+lapply(
+  c("raster", "tidyr", "rgdal", "dplyr", "rasterVis", "ggplot2"),
+  require,
+  character.only = TRUE
+)
 
 # load dem tiles
-dem_tile_path <- "/data/scratch/loibldav/DEMs/ALOS"
+dem_tile_path <- "/data/projects/topoclif/input-data/DEMs/ALOS"
 
 # load glacier shp, evtly do a subset
-glacier_shp <- readOGR("/data/scratch/thimanna/glaciers", "rgi_tibet")
+glacier_shp <- readOGR(
+  "/data/projects/topoclif/input-data/shapefiles", 
+  "TopoCliF_casestudy_glaciers"
+)
 
 # specify the wanted output projection for analysis
 target_proj4 <- paste0(
@@ -96,10 +103,10 @@ singleEvaluate <- function(RGI_id){
   )
   
   # normalize glacier elevation
-  glacier_dem <- (glacier_dem - cellStats(glacier_dem, min)) / 
+  glacier_dem_normalized <- (glacier_dem - cellStats(glacier_dem, min)) / 
     (cellStats(glacier_dem, max) - cellStats(glacier_dem, min)) * 1000
   
-  glacier_ras <- brick(glacier_dem, glacier_dem_slope)
+  glacier_ras <- brick(glacier_dem, glacier_dem_normalized, glacier_dem_slope)
   
   
   return(glacier_ras)
