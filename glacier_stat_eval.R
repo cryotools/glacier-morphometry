@@ -58,8 +58,11 @@ singleEvaluate <- function(RGI_id){
   
   
   # reproject glacier towards DEM projection, if projection differs
-  if (proj4string(glacier_shp_sub) != proj4string(raster(tile_catalogue$path[1]))) {
-    glacier_shp_sub <- spTransform(glacier_shp_sub, crs(raster(tile_catalogue$path[1])))
+  if (proj4string(glacier_shp_sub) != 
+      proj4string(raster(tile_catalogue$path[1]))) {
+    glacier_shp_sub <- spTransform(
+      glacier_shp_sub, crs(raster(tile_catalogue$path[1]))
+    )
   }
   
   #select matching tiles
@@ -126,6 +129,7 @@ getOnlyAttributes <- function(RGI_ID){
   
 }
 
+writeLines("\nStarting main processing...")
 results <- list(
   Karanag = singleEvaluate("RGI60-15.07374"),
   # Karanag = singleEvaluate("RGI60-15.07439"),
@@ -157,7 +161,7 @@ results <- list(
   TC_gobi = singleEvaluate("RGI60-13.45075"),
   Aerqialeteer = singleEvaluate("RGI60-13.31151")
 )
-
+writeLines("\nWriting result rasters...")
 for (i in seq(results)){
   writeRaster(results[[i]], paste0(names(results)[i], ".tif"))
   writeLines(paste0(names(results)[i], ".tif saved."))
