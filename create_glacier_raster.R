@@ -62,9 +62,11 @@ rgi2ras <- function(
     (cellStats(glacier_dem, max) - cellStats(glacier_dem, min)) * 1000
   
   glacier_ras <- brick(
-    dem = glacier_dem, 
-    dem_relative = glacier_dem_relative
+    glacier_dem, 
+    glacier_dem_relative
   )
+  
+  rm(glacier_dem_relative, glacier_shp_demprojection_sub, glacier_shp_sub)
   
   # compute selected DEM sub products
   
@@ -75,7 +77,7 @@ rgi2ras <- function(
       unit = "degrees",
       neighbors = 8
     )
-    glacier_ras <- brick(glacier_ras, glacier_dem_slope)
+    glacier_ras <- addLayer(glacier_ras, glacier_dem_slope)
     rm(glacier_dem_slope)
   }
 
@@ -86,7 +88,7 @@ rgi2ras <- function(
       unit = "degrees",
       neighbors = 8
     )
-    glacier_ras <- brick(glacier_ras, glacier_dem_aspect)
+    glacier_ras <- addLayer(glacier_ras, glacier_dem_aspect)
     rm(glacier_dem_aspect)
   }
   
@@ -95,7 +97,7 @@ rgi2ras <- function(
       glacier_dem,
       opt = "TPI"
     )
-    glacier_ras <- brick(glacier_ras, glacier_dem_tpi)
+    glacier_ras <- addLayer(glacier_ras, glacier_dem_tpi)
     rm(glacier_dem_tpi)
   }
 
@@ -104,7 +106,7 @@ rgi2ras <- function(
       glacier_dem,
       opt = "TRI"
     )
-    glacier_ras <- brick(glacier_ras, glacier_dem_tri)
+    glacier_ras <- addLayer(glacier_ras, glacier_dem_tri)
     rm(glacier_dem_tri)
   }
   

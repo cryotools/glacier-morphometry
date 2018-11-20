@@ -44,6 +44,7 @@ writeLines("\nExtracting spatial extent of tiles...")
 for (i in 1:nrow(tile_catalogue)) {
   tile_catalogue[i, 2:5] <- as.vector(extent(raster(tile_catalogue$path[i])))
 }
+rm(i)
 writeLines("Done.")
 
 
@@ -64,3 +65,6 @@ if (proj4string(glacier_shp) !=
 } else {
   glacier_shp_demprojection <- glacier_shp
 }
+
+rm(glacier_shp, glacier_shp_directory, glacier_shp_filename, 
+   dem_tile_directory)

@@ -6,8 +6,6 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
-# ---- say hello ------------
-
 writeLines(paste("Start:", Sys.time()))
 
 writeLines(paste0(
@@ -19,5 +17,10 @@ writeLines(paste0(
 
 source("./create_presets.R")
 
-# create_glacier_raster.R
+source("./create_glacier_raster.R")
 
+
+#test
+karanag_test <- rgi2ras(
+  "RGI60-15.07374"
+)
