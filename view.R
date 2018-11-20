@@ -1,6 +1,0 @@
-require("raster")
-glacier <- stack("Dangnok.tif")
-names(glacier)
-plot(glacier)
-glacier_freq <- as.data.frame(glacier)
-plot()
