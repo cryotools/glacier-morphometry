@@ -21,6 +21,11 @@ source("./specifications.R")
 writeLines("Done.")
 
 
+# ---- apply specifications ------------
+
+dir.create(output_directory)
+
+
 
 # ---- load Randolph GI SHP ------------
 
