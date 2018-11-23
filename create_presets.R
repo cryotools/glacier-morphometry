@@ -46,8 +46,10 @@ writeLines(paste("Done; read", nrow(tile_catalogue), "tiles."))
 
 # derive extent info for each tile
 writeLines("\nExtracting spatial extent of tiles...")
+pb <- txtProgressBar(min = 0, max = nrow(tile_catalogue), style = 3)
 for (i in 1:nrow(tile_catalogue)) {
   tile_catalogue[i, 2:5] <- as.vector(extent(raster(tile_catalogue$path[i])))
+  setTxtProgressBar(pb, i)
 }
 rm(i)
 writeLines("Done.")
@@ -64,12 +66,10 @@ writeLines("Done.")
 # reproject glacier towards DEM projection, if projection differs
 if (proj4string(glacier_shp) != 
     proj4string(raster(tile_catalogue$path[1]))) {
-  glacier_shp_demprojection <- spTransform(
-    glacier_shp_demprojection, crs(raster(tile_catalogue$path[1]))
+  glacier_shp <- spTransform(
+    glacier_shp, crs(raster(tile_catalogue$path[1]))
   )
-} else {
-  glacier_shp_demprojection <- glacier_shp
 }
 
-rm(glacier_shp, glacier_shp_directory, glacier_shp_filename, 
+rm(glacier_shp_directory, glacier_shp_filename, 
    dem_tile_directory)

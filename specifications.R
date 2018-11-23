@@ -13,8 +13,8 @@
 dem_tile_directory <- "/data/projects/topoclif/input-data/DEMs/ALOS"
 
 # Randolph Glacier Inventory Shapefile
-glacier_shp_directory <- "/data/projects/topoclif/input-data/shapefiles"
-glacier_shp_filename <- "TopoCliF_casestudy_glaciers"
+glacier_shp_directory <- "/data/projects/topoclif/input-data/shapefiles/rgi6"
+glacier_shp_filename <- "highasia_merged"
 
 
 

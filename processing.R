@@ -6,10 +6,6 @@ input <- read.csv(
 )
 writeLines(paste("Done; read", nrow(input), "lines, resp. features."))
 
-# just for testing:
-input <- input[9:11,]
-###
-
 input$RGI_alias <- gsub(
   "\\.",
   "_",

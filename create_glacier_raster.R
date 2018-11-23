@@ -26,12 +26,12 @@ rgi2ras <- function(
 ){
   
   # extract glacier from RGI shapefile
-  glacier_shp_demprojection_sub <- glacier_shp_demprojection[
-    glacier_shp_demprojection@data$RGIId == RGI_ID,
+  glacier_shp_sub <- glacier_shp[
+    glacier_shp@data$RGIId == RGI_ID,
   ]
   
   # select matching DEM tiles
-  ext_glacier <- extent(glacier_shp_demprojection_sub)
+  ext_glacier <- extent(glacier_shp_sub)
   selected_tiles <- tile_catalogue$path[
     tile_catalogue$Xmin <= ext_glacier@xmax &
       tile_catalogue$Xmax >= ext_glacier@xmin &
@@ -49,7 +49,7 @@ rgi2ras <- function(
   }
   
   # reproject DEM and glacier shape
-  glacier_shp_sub <- spTransform(glacier_shp_demprojection_sub, CRSobj = target_projection)
+  glacier_shp_sub <- spTransform(glacier_shp_sub, CRSobj = target_projection)
   glacier_dem <- projectRaster(glacier_dem, crs = target_projection) # too slow
   
   # crop it to the glacier
@@ -66,7 +66,7 @@ rgi2ras <- function(
     glacier_dem_relative
   )
   
-  rm(glacier_dem_relative, glacier_shp_demprojection_sub, glacier_shp_sub)
+  rm(glacier_dem_relative, glacier_shp_sub)
   
   # compute selected DEM sub products
   
