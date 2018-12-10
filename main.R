@@ -29,7 +29,7 @@ source("./processing.R")
 
 # ---- TESTING PIT ------------
 
-
+if(F){
 for (i in seq(results)){
   writeRaster(results[[i]], paste0(names(results)[i], ".tif"))
   writeLines(paste0(names(results)[i], ".tif saved."))
@@ -44,3 +44,4 @@ file_list <- list.files(pattern = "\\.tif$", full.names = T)
 
 name_list <- list.files(pattern = "\\.tif$")
 name_list <- gsub(".tif", "", name_list)
+}
