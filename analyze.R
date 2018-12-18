@@ -10,10 +10,15 @@
 
 options(stringsAsFactors = F)
 
-lapply(c("rgdal", "raster", "rasterVis", "ggplot2", "RColorBrewer"), require, 
-       character.only = T)
+lapply(c("rgdal", "raster", "rasterVis", "ggplot2", "RColorBrewer", "rgeos", 
+         "spex"), require, character.only = T)
 
 source("analysis_parameters.R")
+
+rasterOptions(
+  maxmemory = 4e9,
+  chunksize = 2e9
+)
 
 
 
@@ -64,12 +69,19 @@ png(
 
 
 # get polygon marking the relevant area
-above_ela_func <- function(x) ifelse((x >= ela_assumed*1000) == 1, 1, NA)
-above_ela_poly <- rasterToPolygons(
-  calc(temp_ras$elev_relative, above_ela_func), 
-  dissolve = T
-)
+#above_ela_func <- function(x) ifelse((x >= ela_assumed*1000) == 1, 1, NA)
+below_ela_func <- function(x) ifelse((x <= ela_assumed*1000) == 1, 1, NA)
+#above_ela_poly <- rasterToPolygons(
+#  calc(temp_ras$elev_relative, above_ela_func), 
+#  dissolve = T
+#)
+#TEST <- union(above_ela_poly)
+#above_ela_poly <- unionSpatialPolygons(above_ela_poly, rep(1, length(above_ela_poly)))
 
+#above_ela_poly <- qm_rasterToPolygons(calc(temp_ras$elev_relative, above_ela_func))
+
+below_ela_poly <- rasterToPolygons(calc(temp_ras$elev_relative, below_ela_func),
+                              dissolve = T)
 
 # plot
 
@@ -89,7 +101,9 @@ plot_elevation <- levelplot(
   col.regions=colors_elevation,                   # color ramp
   at=seq(minValue(temp_ras[["elev_absolute"]]),
          maxValue(temp_ras[["elev_absolute"]]), len=110)
-) + latticeExtra::layer(sp.polygons(above_ela_poly, lwd=0.8, col='black'))
+) + latticeExtra::layer(sp.polygons(below_ela_poly, lwd=0, 
+                                    #col="white", 
+                                    fill = rgb(0,0,0,.4)))
 
 plot_slope <- levelplot(
   temp_ras[["slope"]],
@@ -103,11 +117,14 @@ plot_slope <- levelplot(
   #scales=list(draw=FALSE),            # suppress axis labels
   col.regions=colors_slope,                   # color ramp
   at=c(0, .5, 1, 1.5, 5, 10, 20, 30, 45, 60, 90)
-) + latticeExtra::layer(sp.polygons(above_ela_poly, lwd=0.8, col='black'))
+) + #latticeExtra::layer(sp.polygons(above_ela_poly, lwd=0.8, col='black'))
+  latticeExtra::layer(sp.polygons(below_ela_poly, lwd=0, 
+                                  #col="white", 
+                                  fill = rgb(0,0,0,.4)))
 
 print(
   plot_elevation,
-  position=c(0, 0, .5, 1), more=TRUE
+  position=c(0, 0, .5, 1), more = T
 )
 print(
   plot_slope, 
@@ -119,7 +136,7 @@ dev.off()
 
 # ---- plot hexbin slop ~ elevation ----
 
-
+if(F){
 ggplot(
   temp_ras_data,
   aes(
@@ -144,7 +161,7 @@ ggsave(
     "_03_elevation_slope_hexbin.png"
   )
 )
-
+}
 
 setTxtProgressBar(pb, i)
 }
