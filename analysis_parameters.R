@@ -5,5 +5,8 @@
 # Author: Arne Thiemann
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# height of the glacier (0 = lowest value, .5 = middle elevation, 1 = max elevation)
+ela_assumed <- 1/3 
 
-ela_assumed <- 1/3 # height of the glacier (0 = lowest value, .5 = middle elevation, 1 = max elevation)
+# number of hexbins at the x-axis (elevation) in the hexbin plot
+nhexbins <- 30

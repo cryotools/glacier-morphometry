@@ -144,14 +144,22 @@ ggplot(
     y = slope
   )
 ) + 
-  geom_hex(binwidth = c(30,3)) + 
+  geom_hex(binwidth = c(
+    (max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute))/nhexbins, # elevation (x) bins
+    (max(temp_ras_data$slope) - min(temp_ras_data$slope))/(nhexbins*3/4)  # slope (y) bins
+    ),
+    aes(
+      #alpha = ..count.., 
+      fill = ..count..)
+  ) + 
   geom_smooth() +
   theme_light() +
   coord_fixed(ratio = ((
     max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute) 
     ) / (
       max(temp_ras_data$slope) - min(temp_ras_data$slope)
-      ) ) * 3/4 )
+      ) ) * 3/4 ) +
+    scale_fill_gradient(low = "navy", high = "red")
 
 
 ggsave(
