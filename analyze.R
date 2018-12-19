@@ -182,7 +182,7 @@ print(ggplot(
   theme_light() +
   coord_fixed(ratio = (
     max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute) 
-    ) / 95  * 3/5 ) +
+    ) / 95  * 3/4 ) +
     scale_fill_gradient(low = "navy", high = "red") +
   geom_vline(xintercept = ela_calculated) +
   scale_y_continuous(
