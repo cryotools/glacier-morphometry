@@ -151,8 +151,19 @@ dev.off()
 
 # ---- plot hexbin slop ~ elevation ----
 
-if(F){
-ggplot(
+png(
+  filename = paste0(
+    "/data/projects/topoclif/result-data/run003_graphics/",
+    index$RGI_alias[i],
+    "_03_elevation_slope_hexbin.png"
+  ),
+  width = 1920,
+  height = 1200,
+  units = "px",
+  res = 120
+)
+
+print(ggplot(
   temp_ras_data,
   aes(
     x = elev_absolute,
@@ -169,23 +180,29 @@ ggplot(
   ) + 
   #geom_smooth() +
   theme_light() +
-  coord_fixed(ratio = ((
+  coord_fixed(ratio = (
     max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute) 
-    ) / (
-      max(temp_ras_data$slope) - min(temp_ras_data$slope)
-      ) ) * 3/4 ) +
-    scale_fill_gradient(low = "navy", high = "red")
+    ) / 95  * 3/5 ) +
+    scale_fill_gradient(low = "navy", high = "red") +
+  geom_vline(xintercept = ela_calculated) +
+  scale_y_continuous(
+    breaks = c(0, 5, 10, 20, 30, 45, 60, 90), 
+    limits = c(-2.5, 92.5),
+    minor_breaks = NULL
+  ))
 
 
-ggsave(
-  filename = paste0(
-    "/data/projects/topoclif/result-data/run003_graphics/",
-    index$RGI_alias[i],
-    "_03_elevation_slope_hexbin.png"
-  )
-)
-}
+dev.off()
 
+
+
+# ---- simple cumulative elevation plot, as in Zaho et al. ----
+
+
+
+
+
+# move progress bar forward
 setTxtProgressBar(pb, i)
 }
 
