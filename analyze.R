@@ -172,7 +172,7 @@ print(ggplot(
 ) + 
   geom_hex(binwidth = c(
     (max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute))/nhexbins, # elevation (x) bins
-    (max(temp_ras_data$slope) - min(temp_ras_data$slope))/(nhexbins*3/4)  # slope (y) bins
+    (91.8 - -1.8)/(nhexbins*3/4)  # slope (y) bins
     ),
     aes(
       #alpha = ..count.., 
@@ -180,16 +180,23 @@ print(ggplot(
   ) + 
   #geom_smooth() +
   theme_light() +
-  coord_fixed(ratio = (
+  coord_fixed(ratio = ((
     max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute) 
-    ) / 95  * 3/4 ) +
+    ) / 95 ) * 3/4 ) +
     scale_fill_gradient(low = "navy", high = "red") +
   geom_vline(xintercept = ela_calculated) +
   scale_y_continuous(
     breaks = c(0, 5, 10, 20, 30, 45, 60, 90), 
-    limits = c(-2.5, 92.5),
+    limits = c(
+      0 - 90*.02, 
+      90 + 90*.02
+    ),
     minor_breaks = NULL
-  ))
+  )) +
+  xlim(
+    min(temp_ras_data$elev_absolute)-((max(temp_ras_data$elev_absolute)-min(temp_ras_data$elev_absolute))*.02), 
+    max(temp_ras_data$elev_absolute)+((max(temp_ras_data$elev_absolute)-min(temp_ras_data$elev_absolute))*.02)
+  )
 
 
 dev.off()
@@ -198,8 +205,33 @@ dev.off()
 
 # ---- simple cumulative elevation plot, as in Zaho et al. ----
 
+hist_dataset <- data.frame(
+  elevation = temp_ras_data$elev_absolute,
+  area = prod(res(temp_ras)) # area per pixel
+) %>% 
+  group_by(elevation) %>% 
+  summarise(area = sum(area))
+hist_dataset$area_cum <- cumsum(hist_dataset$area)
+
+hist_dataset$elev_class <- cut(
+  hist_dataset$elevation,
+  breaks = seq(min(hist_dataset), max(hist_dataset), length.out = 30)
+)
+
+ggplot(temp_ras_data) +
+  geom_histogram(aes(x = elev_absolute, stat = "bin")) +
+  coord_flip() +
+  theme_light()
 
 
+ggplot(hist_dataset) +
+  geom_bar(
+    aes(
+      x = elevation,
+      y = area
+    ),
+    stat = "identity"
+  )
 
 
 # move progress bar forward
@@ -209,4 +241,24 @@ setTxtProgressBar(pb, i)
 writeLines("\n")
 
 
+#############
+
+set.seed(111)
+userID <- c(1:100)
+Num_Tours <- sample(1:100, 100, replace=T)
+userStats <- data.frame(userID, Num_Tours)
+
+# Sorting x data
+userStats$Num_Tours <- sort(userStats$Num_Tours)
+userStats$cumulative <- cumsum(userStats$Num_Tours/sum(userStats$Num_Tours))
+
+library(ggplot2)
+# Fix manually the maximum value of y-axis
+ymax <- 40
+ggplot(data=userStats,aes(x=Num_Tours)) + 
+  geom_histogram(binwidth = 0.2, col="white")+
+  scale_x_log10(name = 'Number of planned tours',breaks=c(1,5,10,50,100,200))+
+  geom_line(aes(x=Num_Tours,y=cumulative*ymax), col="red", lwd=1)+
+  scale_y_continuous(name = 'Number of users', sec.axis = sec_axis(~./ymax, 
+                                                                   name = "Cumulative percentage of routes [%]"))
 
