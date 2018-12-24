@@ -14,5 +14,5 @@ nhexbins <- 35
 # class breaks for slope analysis in degrees; min and max must be included
 slope_bins <- c(0, .5, 1, 1.5, 5, 10, 20, 30, 45, 60, 90)
 
-# output path for plots
-# (subfolders will be added automatically)
+# output path for plots, will be added if it does not exist
+plot_output_path <- "/data/projects/topoclif/result-data/run003_graphics/"

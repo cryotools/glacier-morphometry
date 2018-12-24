@@ -10,9 +10,17 @@
 
 options(stringsAsFactors = F)
 
-lapply(c("rgdal", "raster", "rasterVis", "ggplot2", "RColorBrewer", "rgeos", 
-         "tidyr", "dplyr", "ggthemes", "scales", "grid", "viridis", 
-         "gridExtra", "hexbin"
+lapply(c("rgdal", "raster", 
+         #"rasterVis", 
+         "ggplot2", 
+         #"RColorBrewer", 
+         #"rgeos", 
+         "tidyr", "dplyr", 
+         #"ggthemes", 
+         #"scales", 
+         #"grid", 
+         #"viridis", 
+         "gridExtra"#, "hexbin"
          ), require, character.only = T)
 
 source("analysis_parameters.R")
@@ -37,7 +45,6 @@ pb <- txtProgressBar(0, nrow(index), style = 3)
 for (i in seq(nrow(index))) {
 
 
-
 temp_ras <- stack(index$raster_path[i])
 
 names(temp_ras) <- c("elev_absolute", "elev_relative", "slope", "aspect")
@@ -59,9 +66,9 @@ colors_slope <- colorRampPalette(c("dodgerblue4", "dodgerblue3", "dodgerblue",
 
 png(
   filename = paste0(
-    "/data/projects/topoclif/result-data/run003_graphics/",
+    plot_output_path,
     index$RGI_alias[i],
-    "_01_overview2.png"
+    "_01_overview_map.png"
   ),
   width = 1920,
   height = 1200,
@@ -153,9 +160,9 @@ dev.off()
 
 png(
   filename = paste0(
-    "/data/projects/topoclif/result-data/run003_graphics/",
+    plot_output_path,
     index$RGI_alias[i],
-    "_03_elevation_slope_hexbin.png"
+    "_02_elevation_slope_hexbin.png"
   ),
   width = 1920,
   height = 1200,
@@ -205,60 +212,112 @@ dev.off()
 
 # ---- simple cumulative elevation plot, as in Zaho et al. ----
 
-hist_dataset <- data.frame(
-  elevation = temp_ras_data$elev_absolute,
-  area = prod(res(temp_ras)) # area per pixel
-) %>% 
-  group_by(elevation) %>% 
-  summarise(area = sum(area))
-hist_dataset$area_cum <- cumsum(hist_dataset$area)
-
-hist_dataset$elev_class <- cut(
-  hist_dataset$elevation,
-  breaks = seq(min(hist_dataset), max(hist_dataset), length.out = 30)
+elev_absolute_hist <- hist(
+  temp_ras_data$elev_absolute, 
+  breaks = seq(0,1e4,50), 
+  plot = F
 )
 
-ggplot(temp_ras_data) +
-  geom_histogram(aes(x = elev_absolute, stat = "bin")) +
-  coord_flip() +
-  theme_light()
+elev_absolute_hist <- data.frame(
+  elevation = elev_absolute_hist$mids[elev_absolute_hist$counts > 0],
+  value = elev_absolute_hist$counts[elev_absolute_hist$counts > 0],
+  visual = "histogram"
+)
 
+elev_absolute_curve <- temp_ras_data %>% 
+  group_by(round(elev_absolute)) %>% 
+  summarise(value = n()) %>% 
+  select(elevation = "round(elev_absolute)", value) %>% 
+  arrange(elevation) %>% 
+  mutate(value = cumsum(value))
+elev_absolute_curve$visual <- "curve"
 
-ggplot(hist_dataset) +
-  geom_bar(
-    aes(
-      x = elevation,
-      y = area
-    ),
-    stat = "identity"
+profileplotdata <- rbind(
+  elev_absolute_curve,
+  elev_absolute_hist
+)
+
+profileplotdata$value <- profileplotdata$value * (prod(res(temp_ras)) / 1000^2)
+profileplotdata$visual_factor <- factor(
+  profileplotdata$visual, 
+  levels = c("histogram", "curve"), 
+  labels = c("Histogram (50 m steps)", "Cumulated curve (1 m steps)")
+)
+
+normal_line <- data.frame(
+  x = min(profileplotdata$elevation[profileplotdata$visual == "curve"]),
+  xend = max(profileplotdata$elevation[profileplotdata$visual == "curve"]),
+  y = min(profileplotdata$value[profileplotdata$visual == "curve"]),
+  yend = max(profileplotdata$value[profileplotdata$visual == "curve"]),
+  visual = "curve"
+) %>% 
+  mutate(
+    visual_factor = factor(
+      visual, 
+      levels = c("histogram", "curve"), 
+      labels = c("Histogram (50 m steps)", "Cumulated curve (1 m steps)")
+    )
   )
 
+normal_hist_reference <- sum(
+  profileplotdata[profileplotdata$visual == "histogram",]$value
+  ) / (
+  nrow(elev_absolute_hist)
+)
 
-# move progress bar forward
+png(
+  filename = paste0(
+    plot_output_path,
+    index$RGI_alias[i],
+    "_03_elevation_curve_hist.png"
+  ),
+  width = 1920,
+  height = 1200,
+  units = "px",
+  res = 120
+)
+print(ggplot() +
+  geom_bar(
+    data = profileplotdata[profileplotdata$visual == "histogram",],
+    aes(
+      x = elevation,
+      y = value
+    ),
+    stat = "identity",
+    width = 50
+  ) +
+  geom_line(
+    data = profileplotdata[profileplotdata$visual == "curve",],
+    aes(
+      x = elevation,
+      y = value
+    )
+  ) +
+  coord_flip() +
+  facet_wrap(~ visual_factor, ncol = 2, scales = "free_x") +
+  theme_minimal() +
+  labs(
+    x = "Elevation [m a.s.l.]",
+    y = "Area [km²]"
+  ) +
+  geom_segment(
+    data = normal_line,
+    aes(
+      x = x, y = y, xend = xend, yend = yend
+    ),
+    inherit.aes = F,
+    linetype = "dashed"
+  ) +
+  geom_vline(xintercept = ela_calculated) +
+  geom_hline(
+    data = filter(profileplotdata, visual == "histogram"), 
+    aes(yintercept = normal_hist_reference),
+    linetype = "dashed"
+  )
+)
+dev.off()
+
 setTxtProgressBar(pb, i)
 }
 
 writeLines("\n")
-
-
-#############
-
-set.seed(111)
-userID <- c(1:100)
-Num_Tours <- sample(1:100, 100, replace=T)
-userStats <- data.frame(userID, Num_Tours)
-
-# Sorting x data
-userStats$Num_Tours <- sort(userStats$Num_Tours)
-userStats$cumulative <- cumsum(userStats$Num_Tours/sum(userStats$Num_Tours))
-
-library(ggplot2)
-# Fix manually the maximum value of y-axis
-ymax <- 40
-ggplot(data=userStats,aes(x=Num_Tours)) + 
-  geom_histogram(binwidth = 0.2, col="white")+
-  scale_x_log10(name = 'Number of planned tours',breaks=c(1,5,10,50,100,200))+
-  geom_line(aes(x=Num_Tours,y=cumulative*ymax), col="red", lwd=1)+
-  scale_y_continuous(name = 'Number of users', sec.axis = sec_axis(~./ymax, 
-                                                                   name = "Cumulative percentage of routes [%]"))
-
