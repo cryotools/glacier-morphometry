@@ -26,3 +26,12 @@ target_projection <- "+proj=aea +lat_1=32 +lat_2=40 +lat_0=0 +lon_0=90 +x_0=0 +y
 
 # directory for the glacier GeoTIFF rasters
 output_directory <- "/data/projects/topoclif/result-data/run001_2018-11-19"
+
+
+
+# ---- settings ----
+
+rasterOptions(
+  maxmemory = 4e9,
+  chunksize = 2e9
+)

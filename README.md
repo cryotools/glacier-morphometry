@@ -1,24 +1,37 @@
 # topoclif_R
 
-## Preparation of inputs
+
+
+## Installation
+
+
+# Requirements
+
+R, version ...
+R packages and their requirements, such as GDAL
+
+
+
+## Getting started
+
+
+### Part 1: Preparations
 
 Download and unpack ALOS tiles
-
 Download and unpack RGI. Combine all relevant glacier SHPs into a single SHP for input.
+List the glaciers of interest in input.csv.
 
-## Application
 
-### Part 1: Create glacier DEMs
+### Part 2: Create glacier DEMs
 
 Change definitions as wished in specifications.R.
 
-List the glaciers of interest in input.csv.
+Run `Rscript main.R`.
 
-Run main.R.
 
-###  Part 2: Analyze glacier DEMs
+###  Part 3: Analyze glacier DEMs
 
 Change settings in analysis_parameters.R as needed.
 
-Run analyze.R.
+Run `Rscript analyze.R`.
 
