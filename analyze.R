@@ -10,10 +10,7 @@
 
 options(stringsAsFactors = F)
 
-lapply(c("rgdal", "raster",
-         "ggplot2",
-         "tidyr", "dplyr",
-         "gridExtra"
+lapply(c("rgdal", "raster", "ggplot2", "tidyr", "dplyr", "gridExtra", "e1071"
          ), require, character.only = T)
 
 source("analysis_parameters.R")
@@ -49,9 +46,21 @@ temp_ras_data <- na.omit(as.data.frame(temp_ras))
 colnames(temp_ras_data) <- c("elev_absolute", "elev_relative", "slope", 
                              "aspect")
 
+
 if(create_figures) source("analysis_figures.R")
+
+if(calculate_metrics) source("analysis_metrics.R")
+
 
 setTxtProgressBar(pb, i)
 }
-
 writeLines("\n")
+
+if(calculate_metrics) {
+  write.table(
+    index, 
+    file = index_metrics_output_file,
+    sep = ";", 
+    row.names = F
+  )
+}

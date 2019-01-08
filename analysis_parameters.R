@@ -35,3 +35,6 @@ index_input_path <- "/data/projects/topoclif/result-data/run003_2018-11-19/index
 
 # output path for plots, will be added if it does not exist
 plot_output_path <- "/data/projects/topoclif/result-data/run003_graphics/"
+
+# index with metrics output csv
+index_metrics_output_file <- "/data/projects/topoclif/result-data/index_metrics.csv"

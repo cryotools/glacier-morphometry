@@ -20,28 +20,3 @@ source("./create_presets.R")
 source("./create_glacier_raster.R")
 
 source("./processing.R")
-
-
-
-
-
-
-
-# ---- TESTING PIT ------------
-
-if(F){
-for (i in seq(results)){
-  writeRaster(results[[i]], paste0(names(results)[i], ".tif"))
-  writeLines(paste0(names(results)[i], ".tif saved."))
-}
-
-
-
-#find relation between elev and slope, evtly play with counts of elev and slope (per area)
-
-
-file_list <- list.files(pattern = "\\.tif$", full.names = T)
-
-name_list <- list.files(pattern = "\\.tif$")
-name_list <- gsub(".tif", "", name_list)
-}
