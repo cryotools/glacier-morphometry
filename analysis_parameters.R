@@ -38,3 +38,4 @@ plot_output_path <- "/data/projects/topoclif/result-data/run003_graphics/"
 
 # index with metrics output csv
 index_metrics_output_file <- "/data/projects/topoclif/result-data/index_metrics.csv"
+metrics_histogram_figure_path <- "/data/projects/topoclif/result-data/metrics_histogram.png"

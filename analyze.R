@@ -31,30 +31,34 @@ index <- read.csv(
   sep = ";"
 )
 
+
+
 # ---- start loop for figures ------------
+
 if(create_figures) writeLines("Creating figures")
+
 if(calculate_metrics) writeLines("Calculating metrics")
+
 pb <- txtProgressBar(0, nrow(index), style = 3)
 for (i in seq(nrow(index))) {
 
-
-temp_ras <- stack(index$raster_path[i])
-
-names(temp_ras) <- c("elev_absolute", "elev_relative", "slope", "aspect")
-
-temp_ras_data <- na.omit(as.data.frame(temp_ras))
-colnames(temp_ras_data) <- c("elev_absolute", "elev_relative", "slope", 
-                             "aspect")
-
-# will create figures for each glacier
-if(create_figures) source("analysis_figures.R")
-
-
-# will create metrics for each glacier
-if(calculate_metrics) source("analysis_metrics.R")
-
-
-setTxtProgressBar(pb, i)
+  temp_ras <- stack(index$raster_path[i])
+  
+  names(temp_ras) <- c("elev_absolute", "elev_relative", "slope", "aspect")
+  
+  temp_ras_data <- na.omit(as.data.frame(temp_ras))
+  colnames(temp_ras_data) <- c("elev_absolute", "elev_relative", "slope", 
+                               "aspect")
+  
+  # will create figures for each glacier
+  if(create_figures) source("analysis_figures.R")
+  
+  
+  # will create metrics for each glacier
+  if(calculate_metrics) source("analysis_metrics.R")
+  
+  
+  setTxtProgressBar(pb, i)
 }
 writeLines("\n")
 
@@ -68,4 +72,30 @@ if(calculate_metrics) {
   )
 }
 
+# ---- analyze metrics ------------
+
+
+if(calculate_metrics){
+  
+  # create long format
+  index_longformat <- index %>% 
+    select(-name, -comment, -RGI_alias, -raster_path) %>% 
+    gather(., key = "parameter", value = "value", -RGI_ID, -type)
+  
+  
+  png(
+    filename = metrics_histogram_figure_path,
+    width = 1920,
+    height = 1200,
+    units = "px",
+    res = 120
+  )
+  
+  print(ggplot(index_longformat) +
+    geom_histogram(aes(x = value, fill = type)) +
+    facet_wrap(~parameter, scales = "free"))
+  
+  dev.off()
+  
+}
 
