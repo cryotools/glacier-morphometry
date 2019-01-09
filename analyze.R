@@ -46,9 +46,11 @@ temp_ras_data <- na.omit(as.data.frame(temp_ras))
 colnames(temp_ras_data) <- c("elev_absolute", "elev_relative", "slope", 
                              "aspect")
 
-
+# will create figures for each glacier
 if(create_figures) source("analysis_figures.R")
 
+
+# will create metrics for each glacier
 if(calculate_metrics) source("analysis_metrics.R")
 
 
@@ -56,6 +58,7 @@ setTxtProgressBar(pb, i)
 }
 writeLines("\n")
 
+# save metrics as a table
 if(calculate_metrics) {
   write.table(
     index, 
@@ -64,3 +67,5 @@ if(calculate_metrics) {
     row.names = F
   )
 }
+
+
