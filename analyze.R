@@ -16,9 +16,13 @@ lapply(c("rgdal", "raster", "ggplot2", "tidyr", "dplyr", "gridExtra", "e1071"
 source("analysis_parameters.R")
 
 # set raster plot colors
-colors_elevation <- colorRampPalette(c("darkgreen", "forestgreen", 
-                                       "chartreuse", "khaki", "yellow", 
-                                       "peru", "sienna4"))
+colors_elevation <- colorRampPalette(
+  c(
+    "darkgreen", "forestgreen", "chartreuse", "khaki", "yellow", "peru", 
+    "sienna4"
+  )
+)
+
 colors_slope <- colorRampPalette(colors_slope)
 
 
@@ -35,11 +39,12 @@ index <- read.csv(
 
 # ---- start loop for figures ------------
 
+# Write out info about the processing that is started
 if(create_figures) writeLines("Creating figures")
-
 if(calculate_metrics) writeLines("Calculating metrics")
 
-pb <- txtProgressBar(0, nrow(index), style = 3)
+pb <- txtProgressBar(0, nrow(index), style = 3)  # progress bar
+
 for (i in seq(nrow(index))) {
 
   temp_ras <- stack(index$raster_path[i])
@@ -59,8 +64,10 @@ for (i in seq(nrow(index))) {
   
   
   setTxtProgressBar(pb, i)
+  
 }
-writeLines("\n")
+
+writeLines("\n")  # more space
 
 # save metrics as a table
 if(calculate_metrics) {
