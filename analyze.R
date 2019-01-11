@@ -42,6 +42,13 @@ index <- read.csv(
 # Write out info about the processing that is started
 if(create_figures) writeLines("Creating figures")
 if(calculate_metrics) writeLines("Calculating metrics")
+writeLines(
+  ifelse(
+    plateau_detection,
+    "including plateau detection",
+    "without plateau detection"
+  )
+)
 
 pb <- txtProgressBar(0, nrow(index), style = 3)  # progress bar
 
