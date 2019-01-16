@@ -28,6 +28,13 @@ colors_slope <- c("dodgerblue4", "dodgerblue3", "dodgerblue",
 # Should plateaus be detected?
 plateau_detection <- T
 
+  # slope limits for detecting possible plateaus
+  pd_slope_limits <- c(2.5, 5, 7.5, 10)
+
+  # clump sizes of flat areas to try out for detection
+  pd_clump_size_limits <- c(.005, .01, .015, .02, .025)
+  
+
 # Should figures for every glacier be created?
 create_figures <- F # TRUE or FALSE, default is TRUE
 

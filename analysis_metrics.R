@@ -27,7 +27,7 @@ index$skewness[i] <- skewness(temp_ras_data$elev_absolute, type = 3)
 
 
 
-# clump-appoach for pleateaus
+# define plateau detection function
 
 get_plateau <- function(
   slope_raster, slope_threshold, relative_elevation_raster, ela_relative, 
@@ -59,12 +59,67 @@ get_plateau <- function(
   return(potential + potential_clumps_sieved)
 }
 
+
+# multiply apply plateau function
+
+plateau_geotable <- data.frame()
+
 if(plateau_detection){
-  
-  #...
-  
+  for (i_slope in pd_slope_limits) {
+    for (i_clump in pd_clump_size_limits) {
+      
+      plateau_geotable <- rbind(plateau_geotable, get_plateau(
+        slope_raster = temp_ras[["slope"]],
+        slope_threshold = i_slope,
+        relative_elevation_raster = temp_ras[["elev_relative"]],
+        ela_relative = ela_assumed,
+        clump_min_size_relative = i_clump
+      )%>% 
+        as(., "SpatialPixelsDataFrame") %>% 
+        as.data.frame() %>% 
+        mutate(
+          class = ifelse(
+            layer == 0,
+            "glacier",
+            ifelse(
+              layer == 1,
+              "below slope limit",
+              ifelse(
+                layer == 2,
+                "plateau detected",
+                "ERROR"
+              )
+            )
+          )
+        ) %>% 
+        mutate(
+          slope_limit = i_slope,
+          clump_size_limit = i_clump
+        )
+      )
+      
+    }
+  }
 }
 
+
+ggplot() +
+  geom_raster(
+    data = plateau_geotable,
+    mapping = aes(x = x, y = y, fill = class)
+  ) +
+  facet_grid(slope_limit ~ clump_size_limit) +
+  coord_fixed() +
+  theme_minimal() +
+  theme(
+    legend.position="bottom",
+    legend.key.width=unit(1.5, "cm"),
+    axis.text.y = element_text(angle = 45, hjust = 1),
+    axis.title.x=element_blank(),
+    axis.title.y=element_blank()
+  )
+
+if(F){
 TEST <- get_plateau(
   slope_raster = temp_ras[["slope"]],
   slope_threshold = 10, #placeholder, to be iterated
@@ -73,3 +128,25 @@ TEST <- get_plateau(
   clump_min_size_relative = .01
 )
 
+TEST %>% 
+  as(., "SpatialPixelsDataFrame") %>% 
+  as.data.frame() %>% 
+  mutate(class = ifelse(
+    layer == 0,
+    "glacier",
+    ifelse(
+      layer == 1,
+      "below slope limit",
+      ifelse(
+        layer == 2,
+        "plateau detected",
+        "ERROR"
+      )
+    )
+  )) %>% 
+  ggplot() +
+  geom_raster(
+    aes(x = x, y = y, fill = class)
+  ) +
+  theme_minimal()
+}
