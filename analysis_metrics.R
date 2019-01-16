@@ -33,19 +33,43 @@ get_plateau <- function(
   slope_raster, slope_threshold, relative_elevation_raster, ela_relative, 
   clump_min_size_relative
 ){
+  # apply slope threshold, only above the assumed ELA
   potential <- slope_raster <= slope_threshold & 
     relative_elevation_raster > (ela_relative * 1000)
   
+  # detect clumps
   potential_clumps <- clump(potential)
   
+  # sieve out clumps that are big enough, relatively to the glacier size
   potential_clumps_sieve <- freq(potential_clumps) %>% 
     as.data.frame() %>% 
     na.omit() %>% 
-    filter(count > nrow(temp_ras_data) *.01)### derive from relative elevation raster by conv. to df and na.omit
+    filter(
+      count > 
+        sum(
+          na.omit(
+            as.data.frame(relative_elevation_raster > ela_relative * 1000)
+          )[,1]
+        ) * clump_min_size_relative
+    )
   
   potential_clumps_sieved <- potential_clumps %in% potential_clumps_sieve$value
   
-  return(potential + potential_clumps_sieved * 2)
+  # build result raster, containing potentials and plateaus
+  return(potential + potential_clumps_sieved)
 }
 
+if(plateau_detection){
+  
+  #...
+  
+}
+
+TEST <- get_plateau(
+  slope_raster = temp_ras[["slope"]],
+  slope_threshold = 10, #placeholder, to be iterated
+  relative_elevation_raster = temp_ras[["elev_relative"]],
+  ela_relative = ela_assumed,
+  clump_min_size_relative = .01
+)
 

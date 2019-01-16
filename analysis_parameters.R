@@ -25,6 +25,9 @@ colors_slope <- c("dodgerblue4", "dodgerblue3", "dodgerblue",
 
 # ---- settings ----
 
+# Should plateaus be detected?
+plateau_detection <- T
+
 # Should figures for every glacier be created?
 create_figures <- F # TRUE or FALSE, default is TRUE
 
