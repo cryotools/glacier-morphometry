@@ -56,18 +56,6 @@ ggras_slope$value_class <- cut(
   ordered_result = T
 )
 
-
-# create custom slope colors for this glacier
-
-levels(ggras_slope$value_class)
-
-color_matcher <- data.frame(
-  slope = c("[0,0.5]", "(0.5,1]", "(1,1.5]", "(1.5,5]", "(5,10]", "(10,20]", 
-            "(20,30]", "(30,45]", "(45,60]", "(60,90]"),
-  color = colors_slope(10)
-)
-
-
 ggp_slope <- ggplot() +
   geom_raster(data=ggras_slope, aes(x=x, y=y, fill=value_class)) +
   coord_fixed() +
@@ -92,9 +80,20 @@ ggp_slope <- ggplot() +
       byrow = T
     )
   ) +
-  scale_fill_manual(values = c("dodgerblue4", "dodgerblue3", "dodgerblue", 
-                               "deepskyblue", "khaki", "yellow", "orange", 
-                               "red2", "red3", "red4")) +
+  scale_fill_manual(
+    values = c(
+      "[0,0.5]" = "dodgerblue4",
+      "(0.5,1]" = "dodgerblue3",
+      "(1,1.5]" = "dodgerblue",
+      "(1.5,5]" = "deepskyblue",
+      "(5,10]" = "khaki",
+      "(10,20]" = "yellow",
+      "(20,30]" = "orange",
+      "(30,45]" = "red2", 
+      "(45,60]" = "red3", 
+      "(60,90]" = "red4"
+    )
+  ) +
   xlim(layer_scales(ggp_elev)$x$range$range) +
   ylim(layer_scales(ggp_elev)$y$range$range)
 

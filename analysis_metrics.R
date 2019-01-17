@@ -124,6 +124,8 @@ if(plateau_detection){
     res = 120
   )
   
+  as.data.frame(temp_ras[["elev_absolute"]])
+  
   print(ggplot() +
     geom_raster(
       data = plateau_geotable,
@@ -139,6 +141,7 @@ if(plateau_detection){
       axis.title.x=element_blank(),
       axis.title.y=element_blank()
     ) +
+    #geom_contour() + # integrate ELA indicator line here, later
     scale_fill_manual(
       values = c(
         rgb(.72,.92,.98), # glaciers

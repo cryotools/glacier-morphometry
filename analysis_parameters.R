@@ -36,7 +36,7 @@ plateau_detection <- T
   
 
 # Should figures for every glacier be created?
-create_figures <- F # TRUE or FALSE, default is TRUE
+create_figures <- T # TRUE or FALSE, default is TRUE
 
 # Should metrics for every glacier in the index be calculated?
 calculate_metrics <- T # TRUE or FALSE, default is TRUE

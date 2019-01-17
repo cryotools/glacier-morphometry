@@ -12,9 +12,11 @@ options(stringsAsFactors = F)
 
 lapply(c("rgdal", "raster", "ggplot2", "tidyr", "dplyr", "gridExtra", "e1071"
          ), require, character.only = T)
-if(plateau_detection) require(igraph)
+
 
 source("analysis_parameters.R")
+
+if(plateau_detection) require(igraph)
 
 # set raster plot colors
 colors_elevation <- colorRampPalette(
