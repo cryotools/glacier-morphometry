@@ -16,7 +16,7 @@ ela_assumed <- 1/3
 nhexbins <- 35
 
 # class breaks for slope analysis in degrees; min and max must be included
-slope_bins <- c(0, .5, 1, 1.5, 5, 10, 20, 30, 45, 60, 90)
+slope_bins <- c(0, .5, 1, 1.5, 5, 10, 20, 30, 45, 60, 90) # DO NOT CHANGE, is hardcoded elsewhere, recently!
 colors_slope <- c("dodgerblue4", "dodgerblue3", "dodgerblue", 
   "deepskyblue", "khaki", "yellow", "orange", 
   "red3", "red4")
@@ -29,10 +29,10 @@ colors_slope <- c("dodgerblue4", "dodgerblue3", "dodgerblue",
 plateau_detection <- T
 
   # slope limits for detecting possible plateaus
-  pd_slope_limits <- c(2.5, 5, 7.5, 10)
+  pd_slope_limits <- c(2.5, 5, 7.5, 10, 12.5)
 
   # clump sizes of flat areas to try out for detection
-  pd_clump_size_limits <- c(.005, .01, .015, .02, .025)
+  pd_clump_size_limits <- c(0.0025, .005, .01, .015, .02, .025)
   
 
 # Should figures for every glacier be created?

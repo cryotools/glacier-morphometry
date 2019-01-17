@@ -27,7 +27,6 @@ colors_elevation <- colorRampPalette(
 colors_slope <- colorRampPalette(colors_slope)
 
 
-
 # ---- load index ------------
 
 index <- read.csv(

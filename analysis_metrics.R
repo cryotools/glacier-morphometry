@@ -45,12 +45,12 @@ get_plateau <- function(
     as.data.frame() %>% 
     na.omit() %>% 
     filter(
-      count > 
-        sum(
+      count >
+        (sum(
           na.omit(
             as.data.frame(relative_elevation_raster > ela_relative * 1000)
           )[,1]
-        ) * clump_min_size_relative
+        ) * clump_min_size_relative)
     )
   
   potential_clumps_sieved <- potential_clumps %in% potential_clumps_sieve$value
@@ -65,6 +65,7 @@ get_plateau <- function(
 plateau_geotable <- data.frame()
 
 if(plateau_detection){
+  
   for (i_slope in pd_slope_limits) {
     for (i_clump in pd_clump_size_limits) {
       
@@ -100,53 +101,55 @@ if(plateau_detection){
       
     }
   }
-}
-
-
-ggplot() +
-  geom_raster(
-    data = plateau_geotable,
-    mapping = aes(x = x, y = y, fill = class)
-  ) +
-  facet_grid(slope_limit ~ clump_size_limit) +
-  coord_fixed() +
-  theme_minimal() +
-  theme(
-    legend.position="bottom",
-    legend.key.width=unit(1.5, "cm"),
-    axis.text.y = element_text(angle = 45, hjust = 1),
-    axis.title.x=element_blank(),
-    axis.title.y=element_blank()
+  
+  
+  # PLACEHOLDER: Detect equal-elevation zones and delineate them
+  
+  
+  plateau_geotable$class <- factor(
+    plateau_geotable$class,
+    levels = c("glacier", "below slope limit", "plateau detected")
   )
-
-if(F){
-TEST <- get_plateau(
-  slope_raster = temp_ras[["slope"]],
-  slope_threshold = 10, #placeholder, to be iterated
-  relative_elevation_raster = temp_ras[["elev_relative"]],
-  ela_relative = ela_assumed,
-  clump_min_size_relative = .01
-)
-
-TEST %>% 
-  as(., "SpatialPixelsDataFrame") %>% 
-  as.data.frame() %>% 
-  mutate(class = ifelse(
-    layer == 0,
-    "glacier",
-    ifelse(
-      layer == 1,
-      "below slope limit",
-      ifelse(
-        layer == 2,
-        "plateau detected",
-        "ERROR"
+  
+  
+  png(
+    filename = paste0(
+      plot_output_path,
+      index$RGI_alias[i],
+      "_21_plateau_detection_thresholds.png"
+    ),
+    width = 1920,
+    height = 1200,
+    units = "px",
+    res = 120
+  )
+  
+  print(ggplot() +
+    geom_raster(
+      data = plateau_geotable,
+      mapping = aes(x = x, y = y, fill = class)
+    ) +
+    facet_grid(slope_limit ~ clump_size_limit) +
+    coord_fixed() +
+    theme_minimal() +
+    theme(
+      legend.position="bottom",
+      legend.key.width=unit(1.5, "cm"),
+      axis.text.y = element_text(angle = 45, hjust = 1),
+      axis.title.x=element_blank(),
+      axis.title.y=element_blank()
+    ) +
+    scale_fill_manual(
+      values = c(
+        rgb(.72,.92,.98), # glaciers
+        rgb(.37,.47,.88), # below slope limit
+        "#000000" # plateau detected
       )
-    )
-  )) %>% 
-  ggplot() +
-  geom_raster(
-    aes(x = x, y = y, fill = class)
-  ) +
-  theme_minimal()
+    ))
+  
+  dev.off()
+  
+  
+  # PLACEHOLDER: print plateau area into metrics
+  
 }
