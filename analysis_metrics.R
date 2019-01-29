@@ -29,9 +29,9 @@ index$skewness[i] <- skewness(temp_ras_data$elev_absolute, type = 3)
 
 # define plateau detection function
 
-get_plateau <- function(
+get_plateaus <- function(
   slope_raster, slope_threshold, relative_elevation_raster, ela_relative, 
-  clump_min_size_relative
+  clump_min_size_absolute
 ){
   # apply slope threshold, only above the assumed ELA
   potential <- slope_raster <= slope_threshold & 
@@ -41,16 +41,17 @@ get_plateau <- function(
   potential_clumps <- clump(potential)
   
   # sieve out clumps that are big enough, relatively to the glacier size
-  potential_clumps_sieve <- freq(potential_clumps) %>% 
+  potential_clumps_sieve <- potential_clumps %>% 
+    freq() %>% 
     as.data.frame() %>% 
-    na.omit() %>% 
+    na.omit()
+  
+  potential_clumps_sieve$clump_area <- potential_clumps_sieve$count *
+    prod(res(potential_clumps))
+  
+  potential_clumps_sieve <- potential_clumps_sieve %>% 
     filter(
-      count >
-        (sum(
-          na.omit(
-            as.data.frame(relative_elevation_raster > ela_relative * 1000)
-          )[,1]
-        ) * clump_min_size_relative)
+      clump_area >= clump_min_size_absolute
     )
   
   potential_clumps_sieved <- potential_clumps %in% potential_clumps_sieve$value
@@ -69,12 +70,12 @@ if(plateau_detection){
   for (i_slope in pd_slope_limits) {
     for (i_clump in pd_clump_size_limits) {
       
-      plateau_geotable <- rbind(plateau_geotable, get_plateau(
+      plateau_geotable <- rbind(plateau_geotable, get_plateaus(
         slope_raster = temp_ras[["slope"]],
         slope_threshold = i_slope,
         relative_elevation_raster = temp_ras[["elev_relative"]],
         ela_relative = ela_assumed,
-        clump_min_size_relative = i_clump
+        clump_min_size_absolute = i_clump
       )%>% 
         as(., "SpatialPixelsDataFrame") %>% 
         as.data.frame() %>% 
