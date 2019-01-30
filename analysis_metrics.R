@@ -1,9 +1,6 @@
 # area, calculated by cells and cell dimensions from raster
 index$area_raster[i] <- nrow(temp_ras_data) * prod(res(temp_ras))
 
-# area derived from vector polygon
-#...
-
 # elevation
 # min
 index$elevation_min[i] <- minValue(temp_ras[["elev_absolute"]])
@@ -25,5 +22,4 @@ index$ela_calculated[i] <- minValue(temp_ras[["elev_absolute"]]) +
 #index$skewness2[i] <- skewness(temp_ras_data$elev_absolute, type = 2)
 index$skewness[i] <- skewness(temp_ras_data$elev_absolute, type = 3)
 
-
-## insert plateau stuff here
+# plateau metrics are retrieved in the corresponding script

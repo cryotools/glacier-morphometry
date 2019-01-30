@@ -67,6 +67,7 @@ for (i in seq(nrow(index))) {
   # will create figures for each glacier
   if(create_figures) source("analysis_figures.R")
   
+  # runs the plateau detection
   if(plateau_detection) source("analysis_plateaus.R")
   
   # will create metrics for each glacier

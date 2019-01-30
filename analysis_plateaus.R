@@ -76,7 +76,7 @@ if(plateau_detection){
     }
   }
   
-  
+  # check option of df processing vs geoprocessing... matching via coordinates
   # PLACEHOLDER: Detect equal-elevation zones and delineate them
   
   
