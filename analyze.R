@@ -109,9 +109,10 @@ if(calculate_metrics){
     res = 120
   )
   
-  print(ggplot(index_longformat) +
-    geom_histogram(aes(x = value, fill = type)) +
-    facet_wrap(~parameter, scales = "free"))
+  print(
+    ggplot(index_longformat) +
+      geom_histogram(aes(x = value, fill = type)) +
+      facet_wrap(~ parameter, scales = "free"))
   
   dev.off()
   

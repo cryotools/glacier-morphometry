@@ -25,12 +25,17 @@ ggras_elev_absolute <- temp_ras[["elev_absolute"]] %>%
 colnames(ggras_elev_absolute) <- c("value", "x", "y")
 
 ggp_elev <- ggplot() +
-  geom_raster(data=ggras_elev_absolute, aes(x=x, y=y, fill=value)) +
+  geom_raster(data=ggras_elev_absolute, aes(x = x, y = y, fill = value)) +
   coord_fixed() +
   #theme_map() +
   theme_light()+
   #coord_map("albers", lat0 = 39, lat1 = 45) +
-  geom_contour(data=ggras_elev_absolute, aes(x=x, y=y, z=value), breaks = ela_calculated, col = "black")+
+  geom_contour(
+    data = ggras_elev_absolute,
+    aes(x = x, y = y, z = value),
+    breaks = ela_calculated,
+    col = "black"
+  ) +
   labs(fill = "Elevation [m a.s.l.]") +
   theme(
     legend.position="bottom",
@@ -57,12 +62,17 @@ ggras_slope$value_class <- cut(
 )
 
 ggp_slope <- ggplot() +
-  geom_raster(data=ggras_slope, aes(x=x, y=y, fill=value_class)) +
+  geom_raster(data = ggras_slope, aes(x = x, y = y, fill = value_class)) +
   coord_fixed() +
   #theme_map() +
   theme_light()+
   #coord_map("albers", lat0 = 39, lat1 = 45) +
-  geom_contour(data=ggras_elev_absolute, aes(x=x, y=y, z=value), breaks = ela_calculated, col = "black")+
+  geom_contour(
+    data = ggras_elev_absolute,
+    aes(x = x, y = y, z = value),
+    breaks = ela_calculated,
+    col = "black"
+  ) +
   labs(fill = "Slope [°]") +
   theme(
     legend.position="bottom",
@@ -124,7 +134,8 @@ print(ggplot(
   )
 ) + 
   geom_hex(binwidth = c(
-    (max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute))/nhexbins, # elevation (x) bins
+    (max(temp_ras_data$elev_absolute) - min(temp_ras_data$elev_absolute)) /
+      nhexbins, # elevation (x) bins
     (91.8 - -1.8)/(nhexbins*3/4)  # slope (y) bins
   ),
   aes(
@@ -147,8 +158,12 @@ print(ggplot(
     minor_breaks = NULL
   )) +
   xlim(
-    min(temp_ras_data$elev_absolute)-((max(temp_ras_data$elev_absolute)-min(temp_ras_data$elev_absolute))*.02), 
-    max(temp_ras_data$elev_absolute)+((max(temp_ras_data$elev_absolute)-min(temp_ras_data$elev_absolute))*.02)
+    min(temp_ras_data$elev_absolute) - 
+      ((max(temp_ras_data$elev_absolute) - 
+          min(temp_ras_data$elev_absolute)) * .02), 
+    max(temp_ras_data$elev_absolute) + 
+      ((max(temp_ras_data$elev_absolute) - 
+          min(temp_ras_data$elev_absolute)) * .02)
   )
 
 
