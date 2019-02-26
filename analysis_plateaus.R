@@ -1,6 +1,5 @@
 
-
-# define plateau detection function
+# ---- define plateau detection function ----
 
 get_plateaus <- function(
   slope_raster, slope_threshold, relative_elevation_raster, ela_relative, 
@@ -34,14 +33,27 @@ get_plateaus <- function(
 }
 
 
-# multiply apply plateau function
+
+
+# ---- multiple apply plateau function ----
 
 plateau_geotable <- data.frame()
 
 if(plateau_detection){
   
-  for (i_slope in pd_slope_limits) {
-    for (i_clump in pd_clump_size_limits) {
+  for (i_slope in metric_slope_limit) {
+    for (i_clump in metric_clump_size_limit) {
+      
+      assign(
+        paste0("raster_", i_slope, "_", i_clump),
+        get_plateaus(
+          slope_raster = temp_ras[["slope"]],
+          slope_threshold = i_slope,
+          relative_elevation_raster = temp_ras[["elev_relative"]],
+          ela_relative = ela_assumed,
+          clump_min_size_absolute = i_clump
+        )
+      )
       
       plateau_geotable <- rbind(plateau_geotable, get_plateaus(
         slope_raster = temp_ras[["slope"]],

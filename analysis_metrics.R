@@ -22,4 +22,5 @@ index$ela_calculated[i] <- minValue(temp_ras[["elev_absolute"]]) +
 #index$skewness2[i] <- skewness(temp_ras_data$elev_absolute, type = 2)
 index$skewness[i] <- skewness(temp_ras_data$elev_absolute, type = 3)
 
-# plateau metrics are retrieved in the corresponding script
+# plateau metrics are retrieved in the corresponding script 
+  #"analysis_pleateaus.R"

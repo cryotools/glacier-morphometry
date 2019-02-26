@@ -5,10 +5,14 @@
 ## Installation
 
 
-# Requirements
+### Requirements
 
-R, version ...
-R packages and their requirements, such as GDAL
+The scripts were written and tested in the following environment:
+R version 3.4.4 (2018-03-15)
+Platform: x86_64-redhat-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Required R packages are: rgdal, raster, ggplot2, tidyr, dplyr, gridExtra and e1071, as well as their dependencies.
 
 
 
