@@ -2,12 +2,24 @@
 # ---- define plateau detection function ----
 
 get_plateaus <- function(
-  slope_raster, slope_threshold, relative_elevation_raster, ela_relative, 
+  absolute_elevation_raster, slope_raster, slope_threshold, relative_elevation_raster, ela_relative, 
   clump_min_size_absolute
 ){
   # apply slope threshold, only above the assumed ELA
   potential <- slope_raster <= slope_threshold & 
     relative_elevation_raster > (ela_relative * 1000)
+  
+  
+  masked_elevation_flat <- absolute_elevation_raster %>% 
+    mask(
+      .,
+      mask = potential,
+      maskvalue = T,
+      inverse = T
+    )
+  
+  min_elevation_flat <- minValue(masked_elevation_flat)
+  max_elevation_flat <- maxValue(masked_elevation_flat)
   
   # detect clumps
   potential_clumps <- clump(potential)
@@ -47,6 +59,7 @@ if(plateau_detection){
       assign(
         paste0("raster_", i_slope, "_", i_clump),
         get_plateaus(
+          absolute_elevation_raster = temp_ras[["elev_absolute"]],
           slope_raster = temp_ras[["slope"]],
           slope_threshold = i_slope,
           relative_elevation_raster = temp_ras[["elev_relative"]],

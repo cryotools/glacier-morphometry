@@ -32,7 +32,7 @@ plateau_detection <- T
   metric_slope_limit <- c(5, 10)
   
   # clump size (m^2)
-  metric_clump_size_limit <- 100
+  metric_clump_size_limit <- 80
   
 
 # Should figures for every glacier be created?
