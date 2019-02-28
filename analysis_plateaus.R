@@ -2,50 +2,88 @@
 # ---- define plateau detection function ----
 
 get_plateaus <- function(
-  absolute_elevation_raster, slope_raster, slope_threshold, relative_elevation_raster, ela_relative, 
-  clump_min_size_absolute
+  
+  # raster inputs
+  ras_elev_abs,
+  ras_elev_rel,####### # to be replaced by absolute ELA stuff
+  ras_slope,  
+  
+  # single value inputs
+  clump_min_size_absolute,
+  slope_threshold,
+  ela_relative
+  
 ){
+  
   # apply slope threshold, only above the assumed ELA
-  potential <- slope_raster <= slope_threshold & 
-    relative_elevation_raster > (ela_relative * 1000)
-  
-  
-  masked_elevation_flat <- absolute_elevation_raster %>% 
-    mask(
-      .,
-      mask = potential,
-      maskvalue = T,
-      inverse = T
-    )
-  
-  min_elevation_flat <- minValue(masked_elevation_flat)
-  max_elevation_flat <- maxValue(masked_elevation_flat)
+  glacier_flat <- ras_slope <= slope_threshold & 
+    ras_elev_rel > (ela_relative * 1000)
+
   
   # detect clumps
-  potential_clumps <- clump(potential)
+  glacier_flat_clumps <- clump(glacier_flat)
   
   # sieve out clumps that are big enough, relatively to the glacier size
-  potential_clumps_sieve <- potential_clumps %>% 
+  glacier_flat_clumps_sieve <- glacier_flat_clumps %>% 
     freq() %>% 
     as.data.frame() %>% 
     na.omit()
   
-  potential_clumps_sieve$clump_area <- potential_clumps_sieve$count *
-    prod(res(potential_clumps))
+  glacier_flat_clumps_sieve$clump_area <- glacier_flat_clumps_sieve$count *
+    prod(res(glacier_flat_clumps)) #conversion from pixels to square meters
   
-  potential_clumps_sieve <- potential_clumps_sieve %>% 
+  glacier_flat_clumps_sieve <- glacier_flat_clumps_sieve %>% 
     filter(
       clump_area >= clump_min_size_absolute
     )
   
-  potential_clumps_sieved <- potential_clumps %in% potential_clumps_sieve$value
+  glacier_flat_clumps_sieved <- glacier_flat_clumps %in% glacier_flat_clumps_sieve$value
   
-  # build result raster, containing potentials and plateaus
-  return(potential + potential_clumps_sieved)
+  
+  # get min/max of plateaus
+  masked_elevation_plateau <- ras_elev_abs %>% 
+    mask(
+      .,
+      mask = glacier_flat_clumps_sieved,
+      maskvalue = T,
+      inverse = T
+    )
+  
+  elev_plateau_min <- minValue(masked_elevation_plateau)
+  elev_plateau_max <- maxValue(masked_elevation_plateau)
+  
+  # get flat elevation band
+  glacier_plateau_elevband <- ras_elev_abs >= elev_plateau_min &
+    ras_elev_abs <= elev_plateau_max
+  
+  
+  # build result raster, containing glacier_flats and plateaus
+  
+  ras_result <- stack(glacier_flat, glacier_flat_clumps_sieved,
+    glacier_plateau_elevband)
+  
+  metrics_result <- list(
+    elev_plateau_min,
+    elev_plateau_max
+  )
+  
+  return(list(raster_Result = ras_result, metrics_result = metrics_result))
 }
 
 
+# test application of function
 
+TESCHT <- get_plateaus(
+  ras_elev_abs = temp_ras[["elev_absolute"]],
+  ras_elev_rel = temp_ras[["elev_relative"]],
+  ras_slope = temp_ras[["slope"]],
+  
+  clump_min_size_absolute = 80^2,
+  slope_threshold = 5,
+  ela_relative = ela_assumed
+)
+
+plot(TESCHT$raster_Result)
 
 # ---- multiple apply plateau function ----
 
@@ -59,19 +97,19 @@ if(plateau_detection){
       assign(
         paste0("raster_", i_slope, "_", i_clump),
         get_plateaus(
-          absolute_elevation_raster = temp_ras[["elev_absolute"]],
-          slope_raster = temp_ras[["slope"]],
+          ras_elev_abs = temp_ras[["elev_absolute"]],
+          ras_slope = temp_ras[["slope"]],
           slope_threshold = i_slope,
-          relative_elevation_raster = temp_ras[["elev_relative"]],
+          ras_elev_rel = temp_ras[["elev_relative"]],
           ela_relative = ela_assumed,
           clump_min_size_absolute = i_clump
         )
       )
       
       plateau_geotable <- rbind(plateau_geotable, get_plateaus(
-        slope_raster = temp_ras[["slope"]],
+        ras_slope = temp_ras[["slope"]],
         slope_threshold = i_slope,
-        relative_elevation_raster = temp_ras[["elev_relative"]],
+        ras_elev_rel = temp_ras[["elev_relative"]],
         ela_relative = ela_assumed,
         clump_min_size_absolute = i_clump
       )%>% 
@@ -151,7 +189,7 @@ if(plateau_detection){
   
   dev.off()
   
-  
+
   # PLACEHOLDER: print plateau area into metrics
   
 }
