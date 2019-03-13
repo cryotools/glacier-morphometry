@@ -13,11 +13,6 @@ png(
   res = 120
 )
 
-# calculate ELA height from defined assumption
-ela_calculated <- minValue(temp_ras[["elev_absolute"]]) +
-  (maxValue(temp_ras[["elev_absolute"]]) - 
-     minValue(temp_ras[["elev_absolute"]])) * ela_assumed
-
 # elevation
 ggras_elev_absolute <- temp_ras[["elev_absolute"]] %>% 
   as(., "SpatialPixelsDataFrame") %>% 

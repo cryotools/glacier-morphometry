@@ -5,39 +5,38 @@ get_plateaus <- function(
   
   # raster inputs
   ras_elev_abs,
-  ras_elev_rel,####### # to be replaced by absolute ELA stuff
-  ras_slope,  
+  ras_slope,
   
   # single value inputs
   clump_min_size_absolute,
   slope_threshold,
-  ela_relative
+  ela_absolute
   
 ){
   
   # apply slope threshold, only above the assumed ELA
   glacier_flat <- ras_slope <= slope_threshold & 
-    ras_elev_rel > (ela_relative * 1000)
+    ras_elev_abs > ela_absolute
 
   
   # detect clumps
   glacier_flat_clumps <- clump(glacier_flat)
   
   # sieve out clumps that are big enough, relatively to the glacier size
-  glacier_flat_clumps_sieve <- glacier_flat_clumps %>% 
+  glacier_flat_clumps_rat <- glacier_flat_clumps %>% 
     freq() %>% 
     as.data.frame() %>% 
     na.omit()
   
-  glacier_flat_clumps_sieve$clump_area <- glacier_flat_clumps_sieve$count *
-    prod(res(glacier_flat_clumps)) #conversion from pixels to square meters
+  # convert clump size from pixels to square meters
+  glacier_flat_clumps_rat$clump_area <- glacier_flat_clumps_rat$count *
+    prod(res(glacier_flat_clumps))
   
-  glacier_flat_clumps_sieve <- glacier_flat_clumps_sieve %>% 
-    filter(
-      clump_area >= clump_min_size_absolute
-    )
+  glacier_flat_clumps_rat <- glacier_flat_clumps_rat[
+    glacier_flat_clumps_rat$clump_area >= clump_min_size_absolute,
+  ]
   
-  glacier_flat_clumps_sieved <- glacier_flat_clumps %in% glacier_flat_clumps_sieve$value
+  glacier_flat_clumps_sieved <- glacier_flat_clumps %in% glacier_flat_clumps_rat$value
   
   
   # get min/max of plateaus
@@ -59,8 +58,11 @@ get_plateaus <- function(
   
   # build result raster, containing glacier_flats and plateaus
   
-  ras_result <- stack(glacier_flat, glacier_flat_clumps_sieved,
-    glacier_plateau_elevband)
+  #ras_result <- stack(glacier_flat, glacier_flat_clumps_sieved,
+    #glacier_plateau_elevband)
+  ras_result <- glacier_flat +
+    glacier_flat_clumps_sieved * 10 +
+    glacier_plateau_elevband * 100
   
   metrics_result <- list(
     elev_plateau_min,
@@ -71,19 +73,30 @@ get_plateaus <- function(
 }
 
 
+
+
+
+
 # test application of function
 
 TESCHT <- get_plateaus(
   ras_elev_abs = temp_ras[["elev_absolute"]],
-  ras_elev_rel = temp_ras[["elev_relative"]],
   ras_slope = temp_ras[["slope"]],
   
   clump_min_size_absolute = 80^2,
   slope_threshold = 5,
-  ela_relative = ela_assumed
+  ela_absolute = ela_calculated
 )
 
 plot(TESCHT$raster_Result)
+freq(TESCHT$raster_Result)
+# value count
+#     0 17208 # glacier
+#     1    10 # flat spots on glacier
+#   100 47088 # plateau elevation band
+#   101   882 # flat spot on plateau elevation band
+#   111  3408 # plateau
+#    NA 97868 # background
 
 # ---- multiple apply plateau function ----
 

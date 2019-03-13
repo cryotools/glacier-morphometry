@@ -64,6 +64,11 @@ for (i in seq(nrow(index))) {
   colnames(temp_ras_data) <- c("elev_absolute", "elev_relative", "slope", 
                                "aspect")
   
+  # calculate ELA height from defined assumption
+  ela_calculated <- minValue(temp_ras[["elev_absolute"]]) +
+    (maxValue(temp_ras[["elev_absolute"]]) - 
+       minValue(temp_ras[["elev_absolute"]])) * ela_assumed
+  
   # will create figures for each glacier
   if(create_figures) source("analysis_figures.R")
   
