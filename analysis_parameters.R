@@ -9,7 +9,7 @@
 
 # ---- parameters ----
 
-# height of the glacier (0 = lowest value, .5 = middle elevation, 1 = max elevation)
+# relative ELA position (0 = lowest value, .5 = middle elevation, 1 = max elevation)
 ela_assumed <- 1/3 
 
 # number of hexbins at the x-axis (elevation) in the hexbin plot
@@ -34,6 +34,15 @@ plateau_detection <- T
   # clump size (in square meters, single or multiple inputs possible)
   metric_clump_size_limit <- 80^2
   
+  # save plateau rasters to the hard drive
+  save_plateau_rasters <- T # TRUE OR FALSE, default: TRUE
+  
+    # where should the plateau rasters be saved, then?
+    # to the given path, ending without slash, /plateau_detection/slopelimit_sizethreshold/ will be added for each loop
+    plateau_rasters_output_directory <- "/data/projects/topoclif/result-data/run001_2018-11-19" # default: getwd()
+  
+  # create plateau detection map figures
+    plot_plateau_detection_figures <- T # TRUE or FALSE, default is TRUE
 
 # Should figures for every glacier be created?
 create_figures <- T # TRUE or FALSE, default is TRUE
