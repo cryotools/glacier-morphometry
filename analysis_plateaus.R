@@ -8,16 +8,15 @@ get_plateaus <- function(
   ras_slope,
   
   # single value inputs
-  clump_min_size_absolute,
-  slope_threshold,
+  plateau_min_size_sqm,
+  slope_threshold_deg,
   ela_absolute
   
 ){
   
   # apply slope threshold, only above the assumed ELA
-  glacier_flat <- ras_slope <= slope_threshold & 
+  glacier_flat <- ras_slope <= slope_threshold_deg & 
     ras_elev_abs > ela_absolute
-
   
   # detect clumps
   glacier_flat_clumps <- clump(glacier_flat)
@@ -33,10 +32,11 @@ get_plateaus <- function(
     prod(res(glacier_flat_clumps))
   
   glacier_flat_clumps_rat <- glacier_flat_clumps_rat[
-    glacier_flat_clumps_rat$clump_area >= clump_min_size_absolute,
+    glacier_flat_clumps_rat$clump_area >= plateau_min_size_sqm,
   ]
   
-  glacier_flat_clumps_sieved <- glacier_flat_clumps %in% glacier_flat_clumps_rat$value
+  glacier_flat_clumps_sieved <- glacier_flat_clumps %in% 
+    glacier_flat_clumps_rat$value
   
   
   # get min/max of plateaus
@@ -74,6 +74,8 @@ get_plateaus <- function(
 
 
 
+plateau_geotable <- data.frame()
+
 
 
 
@@ -83,8 +85,8 @@ TESCHT <- get_plateaus(
   ras_elev_abs = temp_ras[["elev_absolute"]],
   ras_slope = temp_ras[["slope"]],
   
-  clump_min_size_absolute = 80^2,
-  slope_threshold = 5,
+  plateau_min_size_sqm = 80^2,
+  slope_threshold_deg = 5,
   ela_absolute = ela_calculated
 )
 
@@ -94,16 +96,24 @@ freq(TESCHT$raster_Result)
 #     0 17208 # glacier
 #     1    10 # flat spots on glacier
 #   100 47088 # plateau elevation band
-#   101   882 # flat spot on plateau elevation band
+#   101   882 # flat spot on plateau elevation band, but too small
 #   111  3408 # plateau
 #    NA 97868 # background
 
 # ---- multiple apply plateau function ----
 
-plateau_geotable <- data.frame()
+names(TESCHT$raster_Result) <- "plateaus"
 
-if(plateau_detection){
-  
+test_RE_stack <- stack(temp_ras, TESCHT$raster_Result)
+plot(test_RE_stack)
+
+
+
+
+
+
+
+
   for (i_slope in metric_slope_limit) {
     for (i_clump in metric_clump_size_limit) {
       
@@ -112,19 +122,19 @@ if(plateau_detection){
         get_plateaus(
           ras_elev_abs = temp_ras[["elev_absolute"]],
           ras_slope = temp_ras[["slope"]],
-          slope_threshold = i_slope,
+          slope_threshold_deg = i_slope,
           ras_elev_rel = temp_ras[["elev_relative"]],
           ela_relative = ela_assumed,
-          clump_min_size_absolute = i_clump
+          plateau_min_size_sqm = i_clump
         )
       )
       
       plateau_geotable <- rbind(plateau_geotable, get_plateaus(
         ras_slope = temp_ras[["slope"]],
-        slope_threshold = i_slope,
+        slope_threshold_deg = i_slope,
         ras_elev_rel = temp_ras[["elev_relative"]],
         ela_relative = ela_assumed,
-        clump_min_size_absolute = i_clump
+        plateau_min_size_sqm = i_clump
       )%>% 
         as(., "SpatialPixelsDataFrame") %>% 
         as.data.frame() %>% 
@@ -204,5 +214,3 @@ if(plateau_detection){
   
 
   # PLACEHOLDER: print plateau area into metrics
-  
-}

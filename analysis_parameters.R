@@ -28,11 +28,11 @@ colors_slope <- c("dodgerblue4", "dodgerblue3", "dodgerblue",
 # Should plateaus be detected?
 plateau_detection <- T
 
-  # metric slope limit
+  # metric slope limit (single or multiple inputs possible)
   metric_slope_limit <- c(5, 10)
   
-  # clump size (m^2)
-  metric_clump_size_limit <- 80
+  # clump size (in square meters, single or multiple inputs possible)
+  metric_clump_size_limit <- 80^2
   
 
 # Should figures for every glacier be created?
