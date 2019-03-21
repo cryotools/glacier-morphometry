@@ -45,6 +45,28 @@ Run `Rscript analyze.R`.
 ## Outputs
 
 
+### PLateau detection
+
+#### Classified result raster
+
+    value   meaning
+    _____   __________________________________________________
+        0   glacier
+        1   flat spots on glacier
+      100   plateau elevation band
+      101   flat spot on plateau elevation band, but too small
+      111   plateau
+       NA   background
+
+
+#### PLateau elevation raster
+
+
+#### Metrics
+
+Two metrics, the min and max elevation of plateaus are directly derived within the detection function and are added to the output. The definition and all externally derived outputs can be foud in the Metrics definition section.
+
+
 ### Metrics definitions
 
 
@@ -78,11 +100,13 @@ The skewness of the glacier raster's elevation distribution, calculated using `b
 
 #### Plateau detection derived metrics
 
-##### 
+##### `pleateau_elevation_min`, `plateau_elevation_max`, `plateau_elevation_range`
 
-#     0 17208 # glacier
-#     1    10 # flat spots on glacier
-#   100 47088 # plateau elevation band
-#   101   882 # flat spot on plateau elevation band, but too small
-#   111  3408 # plateau
-#    NA 97868 # background-
+The lowest and highest elevation, and the range in between, of the detected plateaus. Derived within the plateau detection function itself, saved in the processing loop.
+
+##### `plateau_elevation_mean`, `plateau_elevation_sd`, `plateau_elevation_skewness`
+
+The arithmetic mean, the standard deviation and the skewness of the plateau elevations. Derived in the processing loop, after the plateau detection execution, from the result. The skewness is calculated in the same way as for the entire glacier, as described in previous sections.
+
+
+

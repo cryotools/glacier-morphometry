@@ -10,16 +10,13 @@
 
 # ---- source plateau detection function ----
 
+
 source("analysis_plateaus_f_get-plateaus.R")
 
 
 
 
-# ---- apply detection ----
-
-
-
-
+# ---- apply detection and derive metrics ----
 
 
 # loop slope thresholds
@@ -41,6 +38,25 @@ for (i_slope in metric_slope_limit) {
     )
 
     # derive metrics, eventually with more operations...
+      # included metrics
+    index$plateau_elevation_min[i] <- intm_ras$metrics_result$plateau_min_elevation
+    index$plateau_elevation_max[i] <- intm_ras$metrics_result$plateau_max_elevation
+    
+    index$plateau_elevation_range[i] <- intm_ras$metrics_result$plateau_max_elevation -
+      intm_ras$metrics_result$plateau_min_elevation
+    
+      # sourced out metrics
+    index$plateau_elevation_mean[i] <- cellStats(
+      intm_ras$raster_plateau_dem, "mean"
+    )
+    index$plateau_elevation_sd[i] <- cellStats(
+      intm_ras$raster_plateau_dem, "sd"
+    )
+    index$plateau_elevation_skewness[i] <- e1071::skewness(
+      na.omit(as.data.frame(intm_ras$raster_plateau_dem))[,1],
+      type = 3
+    )
+    
     
     # save raster, if set
     if (save_plateau_rasters) {
