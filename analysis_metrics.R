@@ -11,19 +11,19 @@
 
 # Detailed definitions are documented in the README.
 
-index$area_absolute_glacier[i] <- nrow(temp_ras_data) * prod(res(temp_ras))
+index$m_area_absolute_glacier[i] <- nrow(temp_ras_data) * prod(res(temp_ras))
 
-index$elevation_min[i] <- minValue(temp_ras[["elev_absolute"]])
-index$elevation_max[i] <- maxValue(temp_ras[["elev_absolute"]])
-index$elevation_range[i] <- maxValue(temp_ras[["elev_absolute"]]) -
+index$m_elevation_min[i] <- minValue(temp_ras[["elev_absolute"]])
+index$m_elevation_max[i] <- maxValue(temp_ras[["elev_absolute"]])
+index$m_elevation_range[i] <- maxValue(temp_ras[["elev_absolute"]]) -
   minValue(temp_ras[["elev_absolute"]])
 
-index$elevation_mean[i] <- cellStats(temp_ras[["elev_absolute"]], "mean")
-index$elevation_sd[i] <- cellStats(temp_ras[["elev_absolute"]], "sd")
+index$m_elevation_mean[i] <- cellStats(temp_ras[["elev_absolute"]], "mean")
+index$m_elevation_sd[i] <- cellStats(temp_ras[["elev_absolute"]], "sd")
 
-index$ela_calculated[i] <- ela_calculated
+index$m_ela_calculated[i] <- ela_calculated
 
-index$skewness[i] <- e1071::skewness(temp_ras_data$elev_absolute, type = 3)
+index$m_glacier_skewness[i] <- e1071::skewness(temp_ras_data$elev_absolute, type = 3)
 
 
 

@@ -39,24 +39,25 @@ for (i_slope in metric_slope_limit) {
 
     # derive metrics, eventually with more operations...
       # included metrics
-    index$plateau_elevation_min[i] <- intm_ras$metrics_result$plateau_min_elevation
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_min")] <- intm_ras$metrics_result$plateau_min_elevation
     index$plateau_elevation_max[i] <- intm_ras$metrics_result$plateau_max_elevation
     
-    index$plateau_elevation_range[i] <- intm_ras$metrics_result$plateau_max_elevation -
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_range")] <- intm_ras$metrics_result$plateau_max_elevation -
       intm_ras$metrics_result$plateau_min_elevation
     
       # sourced out metrics
-    index$plateau_elevation_mean[i] <- cellStats(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_mean")] <- cellStats(
       intm_ras$raster_plateau_dem, "mean"
     )
-    index$plateau_elevation_sd[i] <- cellStats(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_sd")] <- cellStats(
       intm_ras$raster_plateau_dem, "sd"
     )
-    index$plateau_elevation_skewness[i] <- e1071::skewness(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_skewness")] <- e1071::skewness(
       na.omit(as.data.frame(intm_ras$raster_plateau_dem))[,1],
       type = 3
     )
     
+    ####### transformed to loopable until here
     
     # absolute area
     resulting_areas <- NULL
