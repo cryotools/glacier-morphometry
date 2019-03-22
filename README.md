@@ -45,7 +45,7 @@ Run `Rscript analyze.R`.
 ## Outputs
 
 
-### PLateau detection
+### Plateau detection
 
 #### Classified result raster
 
@@ -55,11 +55,11 @@ Run `Rscript analyze.R`.
         1   flat spots on glacier
       100   plateau elevation band
       101   flat spot on plateau elevation band, but too small
-      111   plateau
+      111   plateau (flat spot, big enough)
        NA   background
 
 
-#### PLateau elevation raster
+#### Plateau elevation raster
 
 
 #### Metrics
@@ -73,7 +73,7 @@ Two metrics, the min and max elevation of plateaus are directly derived within t
 #### General metrics
 
 
-##### `area_raster`
+##### `area_absolute_glacier`
 
 The area covered by the glacier raster, in square meters. Calculated using the raster; by number and dimension of cells dimensions.
 
@@ -108,5 +108,11 @@ The lowest and highest elevation, and the range in between, of the detected plat
 
 The arithmetic mean, the standard deviation and the skewness of the plateau elevations. Derived in the processing loop, after the plateau detection execution, from the result. The skewness is calculated in the same way as for the entire glacier, as described in previous sections.
 
+##### `area_absolute_*`
 
+The absolute area in square meters. If a cell fits into different categories, it is counted in all of them.
+
+`area_absolute_glacier` is not derived in the plateau detection itself, but before in the main metrics script. It is described in the previous section.
+
+`area_absolute_flat` is the sum of all flat areas on the glacier (with no minimum area), that do not exceed the threshold
 

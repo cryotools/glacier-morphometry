@@ -58,6 +58,56 @@ for (i_slope in metric_slope_limit) {
     )
     
     
+    # absolute area
+    resulting_areas <- NULL
+    resulting_areas <- raster::freq(intm_ras$raster_result_classified) %>% 
+      as.data.frame() %>% 
+      mutate(count = count * prod(res(intm_ras$raster_result_classified)))
+    
+    index$area_absolute_flat[i] <- sum(
+      resulting_areas$count[resulting_areas$value %in% c(1, 101, 111)]
+    )
+    index$area_absolute_plateau_elevation_band[i] <- sum(
+      resulting_areas$count[resulting_areas$value %in% c(100, 101, 111)]
+    )
+    index$area_absolute_flat_in_plateau_elevation_band[i] <- sum(
+      resulting_areas$count[resulting_areas$value %in% c(101, 111)]
+    )
+    index$area_absolute_plateau[i] <- resulting_areas$count[
+      resulting_areas$value == 111 & !is.na(resulting_areas$value)]
+    
+    # area comparison
+    index$area_rel_flat_to_glacier[i] <- (
+      index$area_absolute_flat[i] / index$area_absolute_glacier[i]) * 100
+    index$area_rel_plateau_to_glacier[i] <- (
+      index$area_absolute_plateau[i] / index$area_absolute_glacier[i]) * 100
+    index$area_rel_plateau_elevation_band_to_glacier[i] <- (
+      index$area_absolute_plateau_elevation_band[i] / 
+        index$area_absolute_glacier[i]) * 100
+    index$area_rel_flat_in_plateau_elevation_band_to_glacier[i] <- (
+      index$area_absolute_flat_in_plateau_elevation_band[i] / 
+        index$area_absolute_glacier[i]) * 100
+    
+    index$area_rel_plateau_to_flat[i] <- (
+      index$area_absolute_plateau[i] / index$area_absolute_flat[i]) * 100
+    index$area_rel_flat_to_plateau_elevation_band[i] <- (
+      index$area_absolute_flat[i] / 
+        index$area_absolute_plateau_elevation_band[i]) * 100
+    index$area_rel_flat_in_plateau_elevation_band_to_flat[i] <- (
+      index$area_absolute_flat_in_plateau_elevation_band[i] / 
+        index$area_absolute_flat[i]) * 100
+    
+    index$area_rel_plateau_to_plateau_elevation_band[i] <- (
+      index$area_absolute_plateau[i] / 
+        index$area_absolute_plateau_elevation_band[i]) * 100
+    index$area_rel_plateau_to_flat_in_plateau_elevation_band[i] <- (
+      index$area_absolute_plateau[i] / 
+        index$area_absolute_flat_in_plateau_elevation_band[i]) * 100
+    index$area_rel_flat_in_plateau_elevation_band_to_plateau_elevation_band[i] <- (
+      index$area_absolute_flat_in_plateau_elevation_band[i] / 
+        index$area_absolute_plateau_elevation_band[i]) * 100
+    
+    
     # save raster, if set
     if (save_plateau_rasters) {
       writeRaster(
