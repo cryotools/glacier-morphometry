@@ -135,6 +135,10 @@ for (i_slope in metric_slope_limit) {
     
     # save raster, if set
     if (save_plateau_rasters) {
+      dir.create(paste0(
+        plateau_rasters_output_directory,
+        "/plateau_detection/", i_slope, "_", i_clump, "/"
+      ))
       writeRaster(
         intm_ras, 
         filename = paste0(
@@ -148,7 +152,7 @@ for (i_slope in metric_slope_limit) {
     
     # plot raster if figure creation is set (syntax matching to other outputs)
     if (plot_plateau_detection_figures) {
-      # ...
+      #### not implemented yet
     }
 
   }
@@ -159,7 +163,7 @@ for (i_slope in metric_slope_limit) {
 
 
 # test application of function
-
+if(F){
 TESCHT <- get_plateaus(
   ras_elev_abs = temp_ras[["elev_absolute"]],
   ras_slope = temp_ras[["slope"]],
@@ -171,6 +175,7 @@ TESCHT <- get_plateaus(
 
 plot(TESCHT$raster_Result)
 freq(TESCHT$raster_Result)
+
 # value count
 #     0 17208 # glacier
 #     1    10 # flat spots on glacier
@@ -293,3 +298,4 @@ plot(test_RE_stack)
   
 
   # PLACEHOLDER: print plateau area into metrics
+}
