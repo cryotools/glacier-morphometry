@@ -42,71 +42,95 @@ for (i_slope in metric_slope_limit) {
     index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_min")] <- intm_ras$metrics_result$plateau_min_elevation
     index$plateau_elevation_max[i] <- intm_ras$metrics_result$plateau_max_elevation
     
-    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_range")] <- intm_ras$metrics_result$plateau_max_elevation -
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_range")] <- intm_ras$metrics_result$plateau_max_elevation -
       intm_ras$metrics_result$plateau_min_elevation
     
       # sourced out metrics
-    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_mean")] <- cellStats(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_mean")] <- cellStats(
       intm_ras$raster_plateau_dem, "mean"
     )
-    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_sd")] <- cellStats(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_sd")] <- cellStats(
       intm_ras$raster_plateau_dem, "sd"
     )
-    index[i, paste0("m_s", i_slope, "_c", i_clump, "plateau_elevation_skewness")] <- e1071::skewness(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_skewness")] <- e1071::skewness(
       na.omit(as.data.frame(intm_ras$raster_plateau_dem))[,1],
       type = 3
     )
     
-    ####### transformed to loopable until here
     
     # absolute area
+    
     resulting_areas <- NULL
     resulting_areas <- raster::freq(intm_ras$raster_result_classified) %>% 
       as.data.frame() %>% 
       mutate(count = count * prod(res(intm_ras$raster_result_classified)))
     
-    index$area_absolute_flat[i] <- sum(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat")] <- sum(
       resulting_areas$count[resulting_areas$value %in% c(1, 101, 111)]
     )
-    index$area_absolute_plateau_elevation_band[i] <- sum(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau_elevation_band")] <- sum(
       resulting_areas$count[resulting_areas$value %in% c(100, 101, 111)]
     )
-    index$area_absolute_flat_in_plateau_elevation_band[i] <- sum(
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat_in_plateau_elevation_band")] <- sum(
       resulting_areas$count[resulting_areas$value %in% c(101, 111)]
     )
-    index$area_absolute_plateau[i] <- resulting_areas$count[
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau")] <- resulting_areas$count[
       resulting_areas$value == 111 & !is.na(resulting_areas$value)]
     
+    
     # area comparison
-    index$area_rel_flat_to_glacier[i] <- (
-      index$area_absolute_flat[i] / index$area_absolute_glacier[i]) * 100
-    index$area_rel_plateau_to_glacier[i] <- (
-      index$area_absolute_plateau[i] / index$area_absolute_glacier[i]) * 100
-    index$area_rel_plateau_elevation_band_to_glacier[i] <- (
-      index$area_absolute_plateau_elevation_band[i] / 
-        index$area_absolute_glacier[i]) * 100
-    index$area_rel_flat_in_plateau_elevation_band_to_glacier[i] <- (
-      index$area_absolute_flat_in_plateau_elevation_band[i] / 
-        index$area_absolute_glacier[i]) * 100
     
-    index$area_rel_plateau_to_flat[i] <- (
-      index$area_absolute_plateau[i] / index$area_absolute_flat[i]) * 100
-    index$area_rel_flat_to_plateau_elevation_band[i] <- (
-      index$area_absolute_flat[i] / 
-        index$area_absolute_plateau_elevation_band[i]) * 100
-    index$area_rel_flat_in_plateau_elevation_band_to_flat[i] <- (
-      index$area_absolute_flat_in_plateau_elevation_band[i] / 
-        index$area_absolute_flat[i]) * 100
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_flat_to_glacier")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_glacier")]
+      ) * 100
     
-    index$area_rel_plateau_to_plateau_elevation_band[i] <- (
-      index$area_absolute_plateau[i] / 
-        index$area_absolute_plateau_elevation_band[i]) * 100
-    index$area_rel_plateau_to_flat_in_plateau_elevation_band[i] <- (
-      index$area_absolute_plateau[i] / 
-        index$area_absolute_flat_in_plateau_elevation_band[i]) * 100
-    index$area_rel_flat_in_plateau_elevation_band_to_plateau_elevation_band[i] <- (
-      index$area_absolute_flat_in_plateau_elevation_band[i] / 
-        index$area_absolute_plateau_elevation_band[i]) * 100
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_plateau_to_glacier")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_glacier")]
+      ) * 100
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_plateau_elevation_band_to_glacier")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau_elevation_band")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_glacier")]
+      ) * 100
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_flat_in_plateau_elevation_band_to_glacier")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat_in_plateau_elevation_band")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_glacier")]
+      ) * 100
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_plateau_to_flat")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat")]
+      ) * 100
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_flat_to_plateau_elevation_band")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau_elevation_band")]
+      ) * 100
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_flat_in_plateau_elevation_band_to_flat")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat_in_plateau_elevation_band")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat")]
+      ) * 100
+    
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_plateau_to_plateau_elevation_band")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau_elevation_band")]
+      ) * 100
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_plateau_to_flat_in_plateau_elevation_band")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat_in_plateau_elevation_band")]
+      ) * 100
+    
+    index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_rel_flat_in_plateau_elevation_band_to_plateau_elevation_band")] <- (
+      index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_flat_in_plateau_elevation_band")] / 
+        index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau_elevation_band")]
+      ) * 100
+    
     
     
     # save raster, if set
