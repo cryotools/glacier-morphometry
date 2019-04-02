@@ -279,17 +279,17 @@ plot(test_RE_stack)
           coord_fixed() +
           theme_minimal() +
           theme(
-            legend.position="bottom",
-            legend.key.width=unit(1.5, "cm"),
+            legend.position = "bottom",
+            legend.key.width = unit(1.5, "cm"),
             axis.text.y = element_text(angle = 45, hjust = 1),
-            axis.title.x=element_blank(),
-            axis.title.y=element_blank()
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank()
           ) +
           #geom_contour() + # integrate ELA indicator line here, later
           scale_fill_manual(
             values = c(
-              rgb(.72,.92,.98), # glaciers
-              rgb(.37,.47,.88), # below slope limit
+              rgb(.72, .92, .98), # glaciers
+              rgb(.37, .47, .88), # below slope limit
               "#000000" # plateau detected
             )
           ))
