@@ -37,15 +37,14 @@ for (i_slope in metric_slope_limit) {
       ela_absolute = ela_calculated
     )
 
-    # derive metrics, eventually with more operations...
-      # included metrics
+    # derive included metrics from plateau detection function
     index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_min")] <- intm_ras$metrics_result$plateau_min_elevation
     index$plateau_elevation_max[i] <- intm_ras$metrics_result$plateau_max_elevation
     
     index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_range")] <- intm_ras$metrics_result$plateau_max_elevation -
       intm_ras$metrics_result$plateau_min_elevation
     
-      # sourced out metrics
+    # sourced out metrics
     index[i, paste0("m_s", i_slope, "_c", i_clump, "_plateau_elevation_mean")] <- cellStats(
       intm_ras$raster_plateau_dem, "mean"
     )
@@ -131,6 +130,11 @@ for (i_slope in metric_slope_limit) {
         index[i, paste0("m_s", i_slope, "_c", i_clump, "_area_absolute_plateau_elevation_band")]
       ) * 100
     
+    
+    
+    
+    
+    ###### ToDo: add more, corresponding to matrix
     
     
     # save raster, if set

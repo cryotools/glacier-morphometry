@@ -52,9 +52,25 @@ writeLines(
   )
 )
 
-pb <- txtProgressBar(0, nrow(index), style = 3)  # progress bar
+# create empty cols in the index table for the metrics computation, if set
+if(calculate_metrics) {
+  index[, c(
+    "m_area_absolute_glacier",
+    "m_elevation_min",
+    "m_elevation_max",
+    "m_elevation_range",
+    "m_elevation_mean",
+    "m_elevation_sd",
+    "m_ela_calculated",
+    "m_glacier_skewness"
+  )] <- NA
+}
 
+# loop through glaciers listed in the index table
+pb <- txtProgressBar(0, nrow(index), style = 3)  # progress bar
 for (i in seq(nrow(index))) {
+  
+  ##### ToDo: include annulation/reset here, in case one glacier doesnt work
 
   temp_ras <- stack(index$raster_path[i])
   
@@ -76,7 +92,7 @@ for (i in seq(nrow(index))) {
   if(plateau_detection) source("analysis_plateaus.R")
   
   # will create metrics for each glacier
-  if(calculate_metrics) source("analysis_metrics.R")
+  if(calculate_metrics) source
   
   
   setTxtProgressBar(pb, i)
