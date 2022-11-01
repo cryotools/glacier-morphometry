@@ -1,5 +1,5 @@
-# topoclif_R
-
+# Glacier morphometry
+A set of R scripts to facilitate geomorphometric analyses of glaciers.
 
 
 ## Installation
@@ -115,4 +115,7 @@ The absolute area in square meters. If a cell fits into different categories, it
 `area_absolute_glacier` is not derived in the plateau detection itself, but before in the main metrics script. It is described in the previous section.
 
 `area_absolute_flat` is the sum of all flat areas on the glacier (with no minimum area), that do not exceed the threshold
+
+# Acknoledgements
+These scripts were developed within the research project "TopoClimatic Forcing and non-linear dynamics in the climate change adaption of glaciers in High Asia" (TopoClif). TopoCliF and the work of David Loibl and Arne Thiemann within the project were funded by [DFG](https://gepris.dfg.de/gepris/projekt/356944332) under the ID LO 2285/1-1.
 
